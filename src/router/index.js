@@ -5,16 +5,19 @@ import Login from '../views/login.vue';
 Vue.use(VueRouter);
 
 const routes = [
+  // 登录页
   {
     path: '/',
     name: 'Login',
     component: Login,
   },
+  // 主页
   {
     path: '/home',
     name: 'Home',
     component: () => import('../views/home.vue'),
   },
+  // 异常页面
   {
     path: '/exception/:type',
     name: 'Exception',

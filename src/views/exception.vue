@@ -9,6 +9,11 @@ import { onMounted, ref } from '@vue/composition-api';
 
 export default {
   setup(props, { root: { $route } }) {
+    /**
+     * 异常类型
+     * @type {string}
+     * @default '403'
+     */
     const exceptionType = ref('403');
     onMounted(() => {
       exceptionType.value = $route.params.type;

@@ -1,6 +1,5 @@
 const config = {
-
   // 登录地址
-  loginUrl: 'http://localhost:3000/data',
+  loginUrl: 'json/user.json',
 };
 export default config;

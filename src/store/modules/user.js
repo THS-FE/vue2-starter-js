@@ -2,7 +2,9 @@ import { login } from '@/services/user';
 import { SET_USERNAME, SET_PASSWORD } from '../mutation-types';
 
 const userState = {
+  // 用户名
   userName: '',
+  // 密码
   password: '',
 };
 
@@ -11,7 +13,14 @@ const getters = {
 };
 
 const actions = {
-  async login({ commit }, params) {
+  /**
+   * 用户登录
+   * @async
+   * @param {function} commit
+   * @param {Object} params
+   * @returns {boolean} 是否跳转页面
+   */
+  login({ commit }, params) {
     return new Promise((resolve, reject) => {
       login(params).then((response) => {
         commit(SET_USERNAME, params.userName);

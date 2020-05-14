@@ -9,7 +9,7 @@
           <i></i>
         </div>
         <div class="form-password form-input-wrap">
-          <input type="text" placeholder="请输入密码" v-model="password" />
+          <input type="password" placeholder="请输入密码" v-model="password" />
           <i></i>
         </div>
         <div class="form-rememberUser">
@@ -22,25 +22,51 @@
 </template>
 
 <script>
+/**
+*@file 思路用户登录界面
+*@author <lvzx>
+*@version 1.0
+*/
 import { toRefs, reactive, onMounted } from '@vue/composition-api';
 
 export default {
   name: 'Login',
   setup(props, { root: { $router, $store } }) {
     const state = reactive({
+      // 判断用户名密码是否检验通过
       isChecked: false,
+      // 用户名
       username: '',
+      // 密码
       password: '',
     });
     const methods = {
+      /**
+       * 点击checkbox框后记住密码
+       * @name handleRemenberPassword
+       */
       handleRemenberPassword() {
         state.isChecked = !state.isChecked;
       },
+      /**
+       * 点击“立即登录”按钮后登录
+       * @async
+       * @name handleLogin
+       */
       async handleLogin() {
-        const isJump = await $store.dispatch('user/login', { userName: state.username, password: state.password });
+        // 判断是否登录成功
+        const isJump = await $store.dispatch(
+          'user/login',
+          {
+            userName: state.username,
+            password: state.password,
+          },
+        );
+        // 判断是否要跳转到首页
         if (isJump) {
           $router.push('Home');
         }
+        // 判断是否记住密码
         if (state.isChecked) {
           localStorage.setItem('user', JSON.stringify({
             name: state.username,
@@ -50,7 +76,12 @@ export default {
       },
     };
     onMounted(() => {
+      /**
+       * localStorage中键名为user的值
+       * @type {?string}
+       */
       let user = localStorage.getItem('user');
+      // 判断localStorage是否存有用户信息
       if (user !== null) {
         user = JSON.parse(user);
         state.username = user.name;
