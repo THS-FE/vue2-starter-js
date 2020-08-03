@@ -19,14 +19,15 @@ module.exports = {
         drop_console: true,
       });
 
-      // // 压缩图片
-      // config.module.rules.push({
-      //   test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-      //   use: [{
-      //     loader: 'image-webpack-loader',
-      //   }],
-      // });
-
+      if (process.platform !== 'win32') {
+      // 压缩图片
+        config.module.rules.push({
+          test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+          use: [{
+            loader: 'image-webpack-loader',
+          }],
+        });
+      }
       // 单独将 elementUI 拆包
       Object.assign(config.optimization.splitChunks.cacheGroups, {
         elementUI: {
