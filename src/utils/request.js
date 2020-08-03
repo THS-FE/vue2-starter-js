@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  // withCredentials: true, // 如跨域请求时要带上cookies,则设置为true
+  withCredentials: true, // 如跨域请求时要带上cookies,则设置为true
   timeout: 5000, // 请求超时时长
 });
 

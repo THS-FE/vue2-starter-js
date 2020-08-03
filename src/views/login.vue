@@ -1,21 +1,32 @@
 <template>
-  <div class="container">
+  <div class="container main">
     <div class="login">
       <img src="../assets/images/login/login-draw.png" alt />
       <div class="form">
         <p>思路后台管理系统</p>
-        <div class="form-user form-input-wrap">
-          <input type="text" placeholder="请输入用户名" v-model="username" />
-          <i></i>
-        </div>
-        <div class="form-password form-input-wrap">
-          <input type="password" placeholder="请输入密码" v-model="password" />
-          <i></i>
-        </div>
+        <el-form :model="form" :rules="rules" style="padding-top:53px" ref="loginForm">
+          <el-form-item prop="username" class="form-input-wrap">
+            <el-input
+              placeholder="请输入用户名"
+              v-model="form.username"
+            >
+              <i slot="suffix"></i>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="password" class="form-input-wrap">
+            <el-input
+              type="password"
+              placeholder="请输入密码"
+              v-model="form.password"
+            >
+              <i slot="suffix"></i>
+            </el-input>
+          </el-form-item>
+        </el-form>
         <div class="form-rememberUser">
           <div :class="[{checked: isChecked}, 'checkbox']" @click="handleRemenberPassword" />记住密码
         </div>
-        <div class="login-btn" @click="handleLogin">立即登录</div>
+        <div class="login-btn" @click="handleLogin('loginForm')">立即登录</div>
       </div>
     </div>
   </div>
@@ -28,6 +39,8 @@
 *@version 1.0
 */
 import { toRefs, reactive, onMounted } from '@vue/composition-api';
+import { Message } from 'element-ui';
+import { resetSize } from '@/utils/common';
 
 export default {
   name: 'Login',
@@ -35,10 +48,25 @@ export default {
     const state = reactive({
       // 判断用户名密码是否检验通过
       isChecked: false,
-      // 用户名
-      username: '',
-      // 密码
-      password: '',
+      isShow: false,
+      // 表单数据
+      form: {
+        // 用户名
+        username: '',
+        // 密码
+        password: '',
+      },
+      // 表单验证规则
+      rules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, message: '密码至少为6位', trigger: 'blur' },
+        ],
+      },
+      timer: null,
     });
     const methods = {
       /**
@@ -53,29 +81,47 @@ export default {
        * @async
        * @name handleLogin
        */
-      async handleLogin() {
-        // 判断是否登录成功
-        const isJump = await $store.dispatch(
-          'user/login',
-          {
-            userName: state.username,
-            password: state.password,
-          },
-        );
-        // 判断是否要跳转到首页
-        if (isJump) {
-          $router.push('Home');
-        }
-        // 判断是否记住密码
-        if (state.isChecked) {
-          localStorage.setItem('user', JSON.stringify({
-            name: state.username,
-            password: state.password,
-          }));
-        }
+      async handleLogin(formName) {
+        this.$refs[formName].validate(async (valid) => {
+          if (valid) {
+            /**
+             * 判断是否登录成功
+             * @type {boolean}
+             */
+            const isSuccess = await $store.dispatch(
+              'user/login',
+              {
+                userName: state.form.username,
+                password: state.form.password,
+              },
+            );
+            // 判断是否要跳转到首页
+            if (isSuccess) {
+              $router.push('Home');
+            } else {
+              Message.error({
+                message: '用户名或密码错误',
+              });
+            }
+            // 判断是否记住密码
+            if (state.isChecked && isSuccess) {
+              localStorage.setItem('user', JSON.stringify({
+                name: state.form.username,
+                password: state.form.password,
+              }));
+            } else {
+              localStorage.removeItem('user');
+            }
+          }
+        });
       },
     };
     onMounted(() => {
+      // 按比例缩放
+      resetSize('.login', 1920, 1080);
+      window.onresize = () => {
+        resetSize('.login', 1920, 1080);
+      };
       /**
        * localStorage中键名为user的值
        * @type {?string}
@@ -84,8 +130,8 @@ export default {
       // 判断localStorage是否存有用户信息
       if (user !== null) {
         user = JSON.parse(user);
-        state.username = user.name;
-        state.password = user.password;
+        state.form.username = user.name;
+        state.form.password = user.password;
       }
     });
     return {
@@ -97,6 +143,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.main{
+  position: relative;
+  .alert{
+    position: absolute;
+    left: calc(50% - 500px);
+    top: 100px;
+    width: 1000px;
+  }
+}
 .container {
   display: flex;
   justify-content: center;
@@ -132,8 +187,10 @@ export default {
       }
       .form-input-wrap {
         position: relative;
-        input {
+        margin-bottom: 30px;
+        /deep/.el-input__inner{
           font-size: 16px;
+          line-height: 16px;
           font-family: Source Han Sans CN;
           font-weight: 400;
           color: rgba(102, 102, 102, 1);
@@ -144,6 +201,9 @@ export default {
           padding: 20px 13px 20px 22px;
           box-sizing: border-box;
         }
+        /deep/input.el-input__inner:last-child{
+          margin-bottom: 3px;
+        }
         i {
           position: absolute;
           right: 16px;
@@ -151,6 +211,10 @@ export default {
           display: block;
           width: 30px;
           height: 30px;
+          background: url("../assets/images/login/user.png");
+        }
+        &:last-child i{
+          background: url("../assets/images/login/password.png");
         }
       }
       .form-user {

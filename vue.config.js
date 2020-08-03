@@ -7,7 +7,7 @@ function isProd() {
 }
 
 // 设置HTTP请求的base url，需修改
-process.env.VUE_APP_BASE_API = isProd() ? '' : '';
+process.env.VUE_APP_BASE_API = isProd() ? './' : '';
 
 module.exports = {
   publicPath: isProd() ? './' : '/', // 其中test要改为项目名称
@@ -18,6 +18,14 @@ module.exports = {
       Object.assign(config.optimization.minimizer[0].options.terserOptions.compress, {
         drop_console: true,
       });
+
+      // // 压缩图片
+      // config.module.rules.push({
+      //   test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+      //   use: [{
+      //     loader: 'image-webpack-loader',
+      //   }],
+      // });
 
       // 单独将 elementUI 拆包
       Object.assign(config.optimization.splitChunks.cacheGroups, {

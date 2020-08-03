@@ -5,13 +5,11 @@ import actions from './actions';
 import getters from './getters';
 import user from './modules/user';
 
-
 Vue.use(Vuex);
 
 const state = {
 
 };
-
 
 export default new Vuex.Store({
   state,

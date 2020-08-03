@@ -8,7 +8,6 @@ import App from './app.vue';
 import router from './router';
 import store from './store'; // 按需使用状态管理
 
-
 Vue.config.productionTip = false;
 
 new Vue({
