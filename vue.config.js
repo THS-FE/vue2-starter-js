@@ -28,6 +28,7 @@ module.exports = {
           }],
         });
       }
+
       // 单独将 elementUI 拆包
       Object.assign(config.optimization.splitChunks.cacheGroups, {
         elementUI: {
